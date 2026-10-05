@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PRO KITS | Premium Sports Jerseys & Apparels</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            blue: '#0066FF',
+                            neon: '#00FF66',
+                            gold: '#FFD700',
+                            dark: '#0B0F19',
+                            card: '#151C2C',
+                            border: '#232D42'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Google Fonts & Font Awesome Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Chart.js for Admin Analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0B0F19;
+            color: #F3F4F6;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0B0F19;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #232D42;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #0066FF;
+        }
+        .glass-nav {
+            background: rgba(11, 15, 25, 0.85);
+            backdrop-filter: blur(16px);
+        }
+        .glass-card {
+            background: rgba(21, 28, 44, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glow-btn {
+            box-shadow: 0 0 25px -5px rgba(0, 102, 255, 0.4);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col bg-brand-dark selection:bg-brand-blue selection:text-white">
+
+    <header class="sticky top-0 z-40 glass-nav border-b border-brand-border">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            
+            <!-- Brand Logo -->
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="switchMainView('storefront')">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-blue to-brand-neon flex items-center justify-center text-black font-black text-xl shadow-lg">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <div>
+                    <span class="text-2xl font-black tracking-tighter text-white">PRO<span class="text-brand-blue">KITS</span></span>
+                    <span class="block text-[9px] font-bold tracking-widest text-brand-neon uppercase">Official Stadium Store</span>
+                </div>
+            </div>
+
+            <!-- Mode Switcher (Storefront <-> Admin Dashboard) -->
+            <div class="flex items-center bg-brand-card p-1.5 rounded-2xl border border-brand-border shadow-inner">
+                <button onclick="switchMainView('storefront')" id="modeStoreBtn" class="px-4 py-2 rounded-xl text-xs font-bold uppercase transition-all bg-brand-blue text-white shadow-md">
+                    <i class="fa-solid fa-store mr-1.5"></i> Storefront
+                </button>
+                <button onclick="switchMainView('admin')" id="modeAdminBtn" class="px-4 py-2 rounded-xl text-xs font-bold uppercase transition-all text-gray-400 hover:text-white">
+                    <i class="fa-solid fa-gauge-high mr-1.5"></i> Admin Portal
+                </button>
+            </div>
+
+            <!-- Store Actions (Cart Trigger & Wishlist) -->
+            <div class="flex items-center space-x-4" id="storefrontActions">
+                <button onclick="toggleCartDrawer()" class="relative p-3 rounded-xl bg-brand-card hover:bg-brand-border/60 border border-brand-border text-white transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-bag-shopping text-brand-neon text-lg"></i>
+                    <span class="hidden sm:inline text-xs font-bold">Bag</span>
+                    <span id="cartCountBadge" class="absolute -top-2 -right-2 bg-brand-blue text-white text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center shadow-md">0</span>
+                </button>
+            </div>
+            
+            <!-- Admin Profile Indicator (Hidden in Storefront) -->
+            <div id="adminActionsContainer" class="hidden items-center space-x-3 pl-4 border-l border-brand-border">
+                <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-brand-blue to-purple-600 flex items-center justify-center font-bold text-white text-xs">
+                    AD
+                </div>
+                <div class="hidden sm:block">
+                    <h4 class="text-xs font-bold text-white">Admin Master</h4>
+                    <span class="text-[9px] text-brand-neon">Superuser</span>
+                </div>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- MAIN APP CONTAINER (Switches Between Store & Admin) -->
+    <main class="flex-grow">
+        
+        <!=========================================================
+          STOREFRONT VIEW SECTION
+        =========================================================>
+        <div id="view-storefront" class="space-y-12 pb-20">
+            
+            <!-- Hero Banner -->
+            <section class="relative overflow-hidden bg-gradient-to-b from-brand-card/50 to-brand-dark py-20 border-b border-brand-border">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-12 items-center">
+                    <div class="space-y-6 z-10">
+                        <span class="bg-brand-neon/10 text-brand-neon text-xs font-bold px-3.5 py-1.5 rounded-full uppercase tracking-widest border border-brand-neon/20 inline-flex items-center gap-2">
+                            <i class="fa-solid fa-bolt"></i> 2026/27 Matchday Collection
+                        </span>
+                        <h1 class="text-4xl sm:text-6xl font-black tracking-tight text-white uppercase leading-none">
+                            Wear Your <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue to-brand-neon">Passion</span> With Pride.
+                        </h1>
+                        <p class="text-gray-400 text-sm sm:text-base leading-relaxed">
+                            Official authentic player issue jerseys, retro classics, and custom match kits engineered with ultra-breathable moisture-wicking technology.
+                        </p>
+                        <div class="flex flex-wrap gap-4 pt-2">
+                            <a href="#catalog" class="px-8 py-4 rounded-2xl bg-brand-blue hover:bg-blue-600 text-white font-extrabold text-xs uppercase tracking-wider transition-all shadow-lg glow-btn flex items-center gap-2">
+                                <i class="fa-solid fa-shirt"></i> Explore All Kits
+                            </a>
+                            <a href="#customizer" class="px-8 py-4 rounded-2xl bg-brand-card hover:bg-brand-border border border-brand-border text-white font-extrabold text-xs uppercase tracking-wider transition-all flex items-center gap-2">
+                                <i class="fa-solid fa-wand-magic-sparkles text-brand-neon"></i> Custom Kit Maker
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="relative flex justify-center">
+                        <div class="w-full max-w-md aspect-square rounded-3xl overflow-hidden glass-card p-4 relative group">
+                            <img src="https://images.unsplash.com/photo-1518091043644-c1d4457512c6?auto=format&fit=crop&w=800&q=80" alt="Featured Jersey" class="w-full h-full object-cover rounded-2xl transform group-hover:scale-105 transition-transform duration-500">
+                            <div class="absolute bottom-6 left-6 right-6 p-4 rounded-2xl glass-card border border-white/10 flex items-center justify-between">
+                                <div>
+                                    <span class="text-[10px] uppercase font-bold text-brand-neon">Featured Choice</span>
+                                    <h4 class="text-sm font-bold text-white">FC Barcelona Home 26/27</h4>
+                                </div>
+                                <span class="text-lg font-black text-brand-neon">$89.99</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Store Catalog & Filters Section -->
+            <section id="catalog" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 pt-8">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-2xl font-black uppercase tracking-tight text-white">Official Jersey Catalog</h2>
+                        <p class="text-xs text-gray-400">Select from club masterworks, national pride editions, and vintage classics.</p>
+                    </div>
+
+                    <!-- Filter Buttons -->
+                    <div class="flex flex-wrap gap-2" id="filterButtons">
+                        <button onclick="filterProducts('all')" class="filter-btn px-4 py-2 rounded-xl text-xs font-bold uppercase transition-all bg-brand-blue text-white shadow-md">All Kits</button>
+                        <button onclick="filterProducts('club')" class="filter-btn px-4 py-2 rounded-xl text-xs font-bold uppercase transition-all bg-brand-card text-gray-300 hover:text-white border border-brand-border">Club Teams</button>
+                        <button onclick="filterProducts('national')" class="filter-btn px-4 py-2 rounded-xl text-xs font-bold uppercase transition-all bg-brand-card text-gray-300 hover:text-white border border-brand-border">National Squads</button>
+                        <button onclick="filterProducts('retro')" class="filter-btn px-4 py-2 rounded-xl text-xs font-bold uppercase transition-all bg-brand-card text-gray-300 hover:text-white border border-brand-border">Retro Classics</button>
+                    </div>
+                </div>
+
+                <!-- Product Grid -->
+                <div id="storeProductGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Populated via JavaScript -->
+                </div>
+            </section>
+
+            <!-- Interactive Custom Jersey Builder Section -->
+            <section id="customizer" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+                <div class="glass-card rounded-3xl p-6 sm:p-10 border border-brand-border grid lg:grid-cols-2 gap-10 items-center">
+                    <div class="space-y-6">
+                        <span class="text-brand-neon text-xs font-black uppercase tracking-widest bg-brand-neon/10 px-3 py-1 rounded-full border border-brand-neon/20">Custom Studio</span>
+                        <h2 class="text-3xl font-black uppercase text-white tracking-tight">Create Your Custom Match Jersey</h2>
+                        <p class="text-xs sm:text-sm text-gray-400">Personalize your name, number, and team colors for your Sunday league or personal collection.</p>
+                        
+                        <div class="space-y-4 pt-2">
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-gray-400 mb-1">Player Name on Back</label>
+                                <input type="text" id="customName" value="LEO 10" oninput="updateCustomPreview()" class="w-full bg-brand-dark border border-brand-border rounded-xl px-4 py-3 text-sm text-white font-bold focus:outline-none focus:border-brand-blue">
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-bold uppercase text-gray-400 mb-1">Squad Number</label>
+                                    <input type="number" id="customNumber" value="10" oninput="updateCustomPreview()" class="w-full bg-brand-dark border border-brand-border rounded-xl px-4 py-3 text-sm text-white font-bold focus:outline-none focus:border-brand-blue">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold uppercase text-gray-400 mb-1">Jersey Color Theme</label>
+                                    <select id="customColor" onchange="updateCustomPreview()" class="w-full bg-brand-dark border border-brand-border rounded-xl px-4 py-3 text-sm text-white font-bold focus:outline-none focus:border-brand-blue">
+                                        <option value="from-blue-700 to-indigo-900">Royal Blue & Gold</option>
+                                        <option value="from-emerald-600 to-teal-900">Emerald Neon</option>
+                                        <option value="from-rose-600 to-red-950">Crimson Glory</option>
+                                        <option value="from-amber-500 to-yellow-700">Gold Victory</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button onclick="addCustomToCart()" class="w-full py-4 rounded-xl bg-brand-neon hover:bg-emerald-400 text-black font-extrabold text-xs uppercase tracking-wider transition-all shadow-lg flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-cart-plus text-base"></i> Order Custom Kit ($109.99)
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Custom Jersey Live Preview Card -->
+                    <div class="flex justify-center">
+                        <div id="customJerseyCard" class="w-full max-w-xs aspect-[3/4] rounded-3xl bg-gradient-to-br from-blue-700 to-indigo-900 p-8 flex flex-col justify-between items-center text-white shadow-2xl relative border-2 border-white/20 transition-all duration-300">
+                            <div class="w-full flex justify-between items-center">
+                                <span class="text-xs font-black uppercase tracking-widest text-brand-neon">PRO KITS AUTHENTIC</span>
+                                <i class="fa-solid fa-shield-halved text-xl text-brand-gold"></i>
+                            </div>
+                            <div class="text-center space-y-2">
+                                <span id="previewName" class="block text-2xl font-black uppercase tracking-widest drop-shadow-md">LEO</span>
+                                <span id="previewNumber" class="block text-7xl font-black tracking-tighter drop-shadow-lg">10</span>
+                            </div>
+                            <div class="w-full text-center pb-2">
+                                <span class="text-[10px] font-bold uppercase tracking-widest bg-black/40 px-3 py-1 rounded-full">Pro Mesh Tech</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+
+
+        <!=========================================================
+          ADMIN DASHBOARD VIEW SECTION
+        =========================================================>
+        <div id="view-admin" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+            
+            <!-- Admin Navigation Tabs -->
+            <div class="flex flex-wrap gap-2 border-b border-brand-border pb-4">
+                <button onclick="switchAdminTab('dashboard')" id="admin-nav-dashboard" class="admin-tab-btn px-5 py-2.5 rounded-xl bg-brand-blue text-white font-bold text-xs uppercase tracking-wider transition-all shadow-md">
+                    <i class="fa-solid fa-chart-pie mr-2"></i> Dashboard Overview
+                </button>
+                <button onclick="switchAdminTab('products')" id="admin-nav-products" class="admin-tab-btn px-5 py-2.5 rounded-xl bg-brand-card text-gray-400 hover:text-white font-bold text-xs uppercase tracking-wider transition-all border border-brand-border">
+                    <i class="fa-solid fa-shirt mr-2"></i> Inventory Catalog
+                </button>
+                <button onclick="switchAdminTab('orders')" id="admin-nav-orders" class="admin-tab-btn px-5 py-2.5 rounded-xl bg-brand-card text-gray-400 hover:text-white font-bold text-xs uppercase tracking-wider transition-all border border-brand-border">
+                    <i class="fa-solid fa-bag-shopping mr-2"></i> Orders Fulfillment
+                </button>
+                <button onclick="switchAdminTab('analytics')" id="admin-nav-analytics" class="admin-tab-btn px-5 py-2.5 rounded-xl bg-brand-card text-gray-400 hover:text-white font-bold text-xs uppercase tracking-wider transition-all border border-brand-border">
+                    <i class="fa-solid fa-chart-line mr-2"></i> Sales Analytics
+                </button>
+            </div>
+
+            <!-- ADMIN SUB-TAB 1: OVERVIEW -->
+            <section id="admin-view-dashboard" class="space-y-6">
+                <!-- Metrics Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="glass-card p-6 rounded-2xl flex items-center justify-between">
+                        <div>
+                            <span class="text-xs font-bold uppercase text-gray-400 tracking-wider">Total Revenue</span>
+                            <h3 class="text-3xl font-black text-white mt-1">$48,290.50</h3>
+                            <span class="text-[10px] text-brand-neon font-bold mt-1 inline-flex items-center gap-1"><i class="fa-solid fa-arrow-trend-up"></i> +18.4% this month</span>
+                        </div>
+                        <div class="w-12 h-12 rounded-2xl bg-brand-blue/10 text-brand-blue flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-wallet"></i>
+                        </div>
+                    </div>
+
+                    <div class="glass-card p-6 rounded-2xl flex items-center justify-between">
+                        <div>
+                            <span class="text-xs font-bold uppercase text-gray-400 tracking-wider">Total Orders</span>
+                            <h3 class="text-3xl font-black text-white mt-1">1,428</h3>
+                            <span class="text-[10px] text-brand-neon font-bold mt-1 inline-flex items-center gap-1"><i class="fa-solid fa-arrow-trend-up"></i> +12% vs last week</span>
+                        </div>
+                        <div class="w-12 h-12 rounded-2xl bg-brand-neon/10 text-brand-neon flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-bag-shopping"></i>
+                        </div>
+                    </div>
+
+                    <div class="glass-card p-6 rounded-2xl flex items-center justify-between">
+                        <div>
+                            <span class="text-xs font-bold uppercase text-gray-400 tracking-wider">Active Products</span>
+                            <h3 id="statProductCount" class="text-3xl font-black text-white mt-1">4</h3>
+                            <span class="text-[10px] text-gray-400 font-bold mt-1 inline-flex items-center gap-1">Across 3 Categories</span>
+                        </div>
+                        <div class="w-12 h-12 rounded-2xl bg-brand-gold/10 text-brand-gold flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-shirt"></i>
+                        </div>
+                    </div>
+
+                    <div class="glass-card p-6 rounded-2xl flex items-center justify-between">
+                        <div>
+                            <span class="text-xs font-bold uppercase text-gray-400 tracking-wider">Registered Fans</span>
+                            <h3 class="text-3xl font-black text-white mt-1">3,890</h3>
+                            <span class="text-[10px] text-brand-neon font-bold mt-1 inline-flex items-center gap-1"><i class="fa-solid fa-user-plus"></i> +240 new today</span>
+                        </div>
+                        <div class="w-12 h-12 rounded-2xl bg-purple-500/10 text-purple-400 flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-users"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chart Grid -->
+                <div class="grid lg:grid-cols-3 gap-6">
+                    <div class="glass-card p-6 rounded-2xl lg:col-span-2">
+                        <h3 class="text-sm font-black uppercase tracking-wider text-white mb-4">Revenue Performance (2026)</h3>
+                        <div class="h-72">
+                            <canvas id="adminRevenueChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="glass-card p-6 rounded-2xl flex flex-col justify-between">
+                        <h3 class="text-sm font-black uppercase tracking-wider text-white mb-4">Top Selling Kits</h3>
+                        <div class="space-y-4" id="adminTopSellingList">
+                            <!-- Populated via JS -->
+                        </div>
+                        <button onclick="switchAdminTab('products')" class="w-full mt-6 py-2.5 rounded-xl bg-brand-dark border border-brand-border text-xs font-bold uppercase text-gray-300 hover:border-brand-blue transition-all">
+                            Manage Inventory Catalog
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ADMIN SUB-TAB 2: PRODUCTS CATALOG -->
+            <section id="admin-view-products" class="hidden space-y-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <h3 class="text-xl font-black uppercase text-white">Jersey Inventory Management</h3>
+                        <p class="text-xs text-gray-400">Add new products, adjust pricing, and manage stock statuses.</p>
+                    </div>
+                    <button onclick="openProductModal()" class="px-5 py-3 rounded-xl bg-brand-blue hover:bg-blue-600 text-white text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 shadow-lg glow-btn">
+                        <i class="fa-solid fa-plus text-sm"></i> Add New Jersey
+                    </button>
+                </div>
+
+                <div class="glass-card rounded-2xl overflow-hidden border border-brand-border">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-brand-dark/80 border-b border-brand-border text-[11px] font-bold uppercase text-gray-400 tracking-wider">
+                                    <th class="p-4">Jersey Item</th>
+                                    <th class="p-4">Category</th>
+                                    <th class="p-4">Price</th>
+                                    <th class="p-4">Stock Status</th>
+                                    <th class="p-4">Rating</th>
+                                    <th class="p-4 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminProductTable" class="divide-y divide-brand-border text-xs text-gray-300">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ADMIN SUB-TAB 3: ORDERS -->
+            <section id="admin-view-orders" class="hidden space-y-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <h3 class="text-xl font-black uppercase text-white">Customer Orders</h3>
+                        <p class="text-xs text-gray-400">Real-time incoming matchday orders and fulfillment status management.</p>
+                    </div>
+                </div>
+
+                <div class="glass-card rounded-2xl overflow-hidden border border-brand-border">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-brand-dark/80 border-b border-brand-border text-[11px] font-bold uppercase text-gray-400 tracking-wider">
+                                    <th class="p-4">Order ID</th>
+                                    <th class="p-4">Customer</th>
+                                    <th class="p-4">Items Ordered</th>
+                                    <th class="p-4">Total Amount</th>
+                                    <th class="p-4">Fulfillment Status</th>
+                                    <th class="p-4 text-right">Update Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminOrderTable" class="divide-y divide-brand-border text-xs text-gray-300">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ADMIN SUB-TAB 4: ANALYTICS -->
+            <section id="admin-view-analytics" class="hidden space-y-6">
+                <h3 class="text-xl font-black uppercase text-white">Detailed Sales Analytics</h3>
+                <div class="grid lg:grid-cols-2 gap-6">
+                    <div class="glass-card p-6 rounded-2xl">
+                        <h4 class="text-sm font-bold uppercase text-white mb-4">Sales by Category Distribution</h4>
+                        <div class="h-64 flex items-center justify-center">
+                            <canvas id="categoryPieChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="glass-card p-6 rounded-2xl">
+                        <h4 class="text-sm font-bold uppercase text-white mb-4">Weekly Order Fulfillment Volume</h4>
+                        <div class="h-64">
+                            <canvas id="weeklyBarChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-brand-card/50 border-t border-brand-border py-12 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-6">
+            <div class="flex items-center space-x-3">
+                <div class="w-8 h-8 rounded-lg bg-brand-blue flex items-center justify-center text-white font-black text-sm">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <span class="text-lg font-black tracking-tighter text-white">PRO<span class="text-brand-blue">KITS</span></span>
+            </div>
+            <p class="text-xs text-gray-400">&copy; 2026 PRO KITS Stadium Store. All rights reserved.</p>
+            <div class="flex space-x-4 text-gray-400 text-sm">
+                <a href="#" class="hover:text-brand-neon transition-colors"><i class="fa-brands fa-instagram"></i></a>
+                <a href="#" class="hover:text-brand-neon transition-colors"><i class="fa-brands fa-twitter"></i></a>
+                <a href="#" class="hover:text-brand-neon transition-colors"><i class="fa-brands fa-tiktok"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <!=========================================================
+      SHOPPING CART / CHECKOUT DRAWER
+    =========================================================>
+    <div id="cartDrawer" class="fixed inset-0 z-50 flex justify-end hidden">
+        <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" onclick="toggleCartDrawer()"></div>
+        <div class="relative w-full max-w-md bg-brand-card border-l border-brand-border h-full flex flex-col z-10 p-6 shadow-2xl">
+            <div class="flex items-center justify-between pb-6 border-b border-brand-border">
+                <h3 class="text-lg font-black uppercase text-white flex items-center gap-2">
+                    <i class="fa-solid fa-bag-shopping text-brand-neon"></i> Your Kit Bag (<span id="cartItemCount">0</span>)
+                </h3>
+                <button onclick="toggleCartDrawer()" class="text-gray-400 hover:text-white p-2">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+
+            <div id="cartItemsList" class="flex-grow overflow-y-auto py-6 space-y-4 divide-y divide-brand-border/50">
+                <!-- Cart items populated via JS -->
+            </div>
+
+            <div class="pt-6 border-t border-brand-border space-y-4">
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-gray-400">Subtotal</span>
+                    <span id="cartSubtotal" class="font-black text-white">$0.00</span>
+                </div>
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-gray-400">Express Matchday Delivery</span>
+                    <span class="font-bold text-brand-neon">FREE</span>
+                </div>
+                <div class="flex justify-between items-center text-base pt-2 border-t border-brand-border/40">
+                    <span class="font-black text-white uppercase">Total</span>
+                    <span id="cartTotal" class="font-black text-2xl text-brand-neon">$0.00</span>
+                </div>
+                <button onclick="openCheckoutModal()" class="w-full py-4 rounded-xl bg-brand-blue hover:bg-blue-600 text-white font-extrabold text-xs uppercase tracking-wider transition-all shadow-lg glow-btn">
+                    Proceed to Secure Checkout
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!=========================================================
+      PRODUCT DETAIL / QUICK VIEW MODAL
+    =========================================================>
+    <div id="quickViewModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-md" onclick="closeQuickView()"></div>
+        <div id="quickViewContent" class="relative glass-card border border-brand-border rounded-3xl max-w-2xl w-full p-6 sm:p-8 z-10 text-white shadow-2xl">
+            <!-- Populated via JS -->
+        </div>
+    </div>
+
+    <!=========================================================
+      CHECKOUT MODAL
+    =========================================================>
+    <div id="checkoutModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-md" onclick="closeCheckoutModal()"></div>
+        <div class="relative glass-card border border-brand-border rounded-3xl max-w-lg w-full p-6 sm:p-8 z-10 text-white shadow-2xl space-y-6">
+            <div class="flex items-center justify-between">
+                <h3 class="text-xl font-black uppercase">Secure Checkout</h3>
+                <button onclick="closeCheckoutModal()" class="text-gray-400 hover:text-white p-2">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+            
+            <form onsubmit="handleCheckoutSubmit(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase text-gray-400 mb-1">Full Name</label>
+                    <input type="text" required placeholder="Ali Hassan" class="w-full bg-brand-dark border border-brand-border rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-brand-blue">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-gray-400 mb-1">Shipping Address</label>
+                    <input type="text" required placeholder="Stadium Road, Block 4, Karachi" class="w-full bg-brand-dark border border-brand-border rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-brand-blue">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-gray-400 mb-1">City</label>
+                        <input type="text" required placeholder="Karachi" class="w-full bg-brand-dark border border-brand-border rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-brand-blue">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-gray-400 mb-1">Phone Number</label>
+                        <input type="tel" required placeholder="+92 300 1234567" class="w-full bg-brand-dark border border-brand-border rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-brand-blue">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-gray-400 mb-1">Payment Method</label>
+                    <select class="w-full bg-brand-dark border border-brand-border rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-brand-blue">
+                        <option>Cash on Delivery (COD)</option>
+                        <option>Credit / Debit Card</option>
+                        <option>JazzCash / EasyPaisa</option>
+                    </select>
+                </div>
+                <button type="submit" class="w-full py-4 rounded-xl bg-brand-neon hover:bg-emerald-400 text-black font-extrabold text-xs uppercase tracking-wider transition-all shadow-lg">
+                    Confirm Matchday Order
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!=========================================================
+      ADD / EDIT PRODUCT MODAL (ADMIN)
+    =========================================================>
+    <div id="productModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-md" onclick="closeProductModal()"></div>
+        <div class="relative glass-card border border-brand-border rounded-3xl max-w-lg w-full p-6 sm:p-8 z-10 text-white shadow-2xl">
+            <button onclick="closeProductModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white p-2">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+            <h3 id="modalTitle" class="text-xl font-black uppercase mb-6">Add New Jersey Item</h3>
+            
+            <form id="productForm" onsubmit="handleSaveProduct(event)" class="space-y-4">
+                <input type="hidden" id="editProductId">
+                <div>
+                    <label class="block text-xs font-bold uppercase text-gray-400 mb-1">Jersey Title / Team</label>
+                    <input type="text" id="prodTitleInput" required placeholder="e.g. AC Milan Home Kit 26/27" class="w-full bg-brand-dark border border-brand-border rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-brand-blue">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-gray-400 mb-1">Category</label>
+                        <select id="prodCategoryInput" class="w-full bg-brand-dark border border-brand-border rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-brand-blue">
+                            <option value="club">Club Kit</option>
+                            <option value="national">National Team</option>
+                            <option value="retro">Retro Classic</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-gray-400 mb-1">Price ($)</label>
+                        <input type="number" step="0.01" id="prodPriceInput" required placeholder="89.99" class="w-full bg-brand-dark border border-brand-border rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-brand-blue">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-gray-400 mb-1">Image URL</label>
+                    <input type="url" id="prodImageInput" required placeholder="https://images.unsplash.com/..." class="w-full bg-brand-dark border border-brand-border rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-brand-blue">
+                </div>
+                <button type="submit" class="w-full py-4 rounded-xl bg-brand-blue hover:bg-blue-600 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-lg glow-btn">
+                    Save Jersey To Catalog
+                </button>
+            </form>
+        </div>
+    </div>
+
+
+    <!=========================================================
+      JAVASCRIPT APPLICATION LOGIC
+    =========================================================>
+    <script>
+        let products = [
+            { id: 1, title: "FC Barcelona Home Stadium Kit 26/27", category: "club", price: 89.99, rating: 5.0, image: "https://images.unsplash.com/photo-1518091043644-c1d4457512c6?auto=format&fit=crop&w=600&q=80", stock: "In Stock", description: "Official Dri-FIT match jersey featuring high-performance breathable fabric and embroidered club crest." },
+            { id: 2, title: "Real Madrid Special Edition Gold Kit", category: "club", price: 94.99, rating: 4.9, image: "https://images.unsplash.com/photo-1577223625816-7546f13df25d?auto=format&fit=crop&w=600&q=80", stock: "In Stock", description: "Limited championship edition with golden accents and premium player issue ventilation panels." },
+            { id: 3, title: "Argentina World Champions 3-Star Kit", category: "national", price: 99.99, rating: 5.0, image: "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=600&q=80", stock: "Low Stock", description: "Honoring the 3-star world championship legacy with classic sky blue and white stripes." },
+            { id: 4, title: "Retro Brasil 2002 World Cup Classic", category: "retro", price: 79.99, rating: 4.8, image: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&w=600&q=80", stock: "In Stock", description: "Legendary 2002 yellow classic retro jersey celebrating world-class football history." }
+        ];
+
+        let cart = [];
+        let adminOrders = [
+            { id: "ORD-9281", customer: "Ali Hassan", items: "FC Barcelona Home (M)", amount: 89.99, status: "Pending" },
+            { id: "ORD-9280", customer: "Raza Malik", items: "Argentina 3-Star (L)", amount: 99.99, status: "Shipped" },
+            { id: "ORD-9279", customer: "Kashif Shah", items: "Real Madrid Gold (XL)", amount: 94.99, status: "Delivered" }
+        ];
+
+        let currentFilter = 'all';
+        let chartsInitialized = false;
+
+        // On Load Initialization
+        window.addEventListener('DOMContentLoaded', () => {
+            renderStoreProducts();
+            renderAdminProducts();
+            renderAdminOrders();
+            renderAdminTopSelling();
+        });
+
+        function switchMainView(view) {
+            const storeView = document.getElementById('view-storefront');
+            const adminView = document.getElementById('view-admin');
+            const storeBtn = document.getElementById('modeStoreBtn');
+            const adminBtn = document.getElementById('modeAdminBtn');
+            const storeActions = document.getElementById('storefrontActions');
+            const adminActions = document.getElementById('adminActionsContainer');
+
+            if(view === 'storefront') {
+                storeView.classList.remove('hidden');
+                adminView.classList.add('hidden');
+                storeBtn.className = "px-4 py-2 rounded-xl text-xs font-bold uppercase transition-all bg-brand-blue text-white shadow-md";
+                adminBtn.className = "px-4 py-2 rounded-xl text-xs font-bold uppercase transition-all text-gray-400 hover:text-white";
+                storeActions.classList.remove('hidden');
+                adminActions.classList.add('hidden');
+            } else {
+                storeView.classList.add('hidden');
+                adminView.classList.remove('hidden');
+                adminBtn.className = "px-4 py-2 rounded-xl text-xs font-bold uppercase transition-all bg-brand-blue text-white shadow-md";
+                storeBtn.className = "px-4 py-2 rounded-xl text-xs font-bold uppercase transition-all text-gray-400 hover:text-white";
+                storeActions.classList.add('hidden');
+                adminActions.classList.remove('hidden');
+                
+                if(!chartsInitialized) {
+                    initAdminCharts();
+                    chartsInitialized = true;
+                }
+            }
+        }
+
+        function switchAdminTab(tab) {
+            document.querySelectorAll('#view-admin > section').forEach(sec => sec.classList.add('hidden'));
+            document.getElementById(`admin-view-${tab}`).classList.remove('hidden');
+
+            document.querySelectorAll('.admin-tab-btn').forEach(btn => {
+                btn.className = "admin-tab-btn px-5 py-2.5 rounded-xl bg-brand-card text-gray-400 hover:text-white font-bold text-xs uppercase tracking-wider transition-all border border-brand-border";
+            });
+            document.getElementById(`admin-nav-${tab}`).className = "admin-tab-btn px-5 py-2.5 rounded-xl bg-brand-blue text-white font-bold text-xs uppercase tracking-wider transition-all shadow-md";
+        }
+
+        function renderStoreProducts() {
+            const grid = document.getElementById('storeProductGrid');
+            grid.innerHTML = '';
+
+            const filtered = currentFilter === 'all' ? products : products.filter(p => p.category === currentFilter);
+
+            filtered.forEach(p => {
+                grid.insertAdjacentHTML('beforeend', `
+                    <div class="glass-card rounded-3xl overflow-hidden border border-brand-border group hover:border-brand-blue transition-all duration-300 flex flex-col justify-between">
+                        <div class="relative aspect-[4/5] overflow-hidden bg-brand-dark/50 cursor-pointer" onclick="openQuickView(${p.id})">
+                            <img src="${p.image}" alt="${p.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            <span class="absolute top-4 left-4 bg-brand-dark/80 backdrop-blur-md text-brand-neon font-black text-[10px] px-3 py-1 rounded-full uppercase tracking-wider border border-brand-border">${p.category}</span>
+                            <div class="absolute bottom-4 right-4 bg-black/70 backdrop-blur-md px-3 py-1.5 rounded-xl text-brand-gold font-bold text-xs">
+                                <i class="fa-solid fa-star mr-1"></i>${p.rating}
+                            </div>
+                        </div>
+                        <div class="p-6 space-y-4 flex flex-col flex-grow justify-between">
+                            <div>
+                                <h3 class="font-black text-white text-base line-clamp-1 group-hover:text-brand-blue transition-colors cursor-pointer" onclick="openQuickView(${p.id})">${p.title}</h3>
+                                <p class="text-xs text-gray-400 line-clamp-2 mt-1">${p.description}</p>
+                            </div>
+                            <div class="flex items-center justify-between pt-4 border-t border-brand-border/60">
+                                <span class="text-xl font-black text-brand-neon">$${p.price.toFixed(2)}</span>
+                                <button onclick="addToCart(${p.id})" class="px-4 py-2.5 rounded-xl bg-brand-blue hover:bg-blue-600 text-white font-extrabold text-xs uppercase tracking-wider transition-all shadow-md flex items-center gap-2">
+                                    <i class="fa-solid fa-cart-plus"></i> Add
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `);
+            });
+        }
+
+        function filterProducts(category) {
+            currentFilter = category;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.className = "filter-btn px-4 py-2 rounded-xl text-xs font-bold uppercase transition-all bg-brand-card text-gray-300 hover:text-white border border-brand-border";
+            });
+            event.target.className = "filter-btn px-4 py-2 rounded-xl text-xs font-bold uppercase transition-all bg-brand-blue text-white shadow-md";
+            renderStoreProducts();
+        }
+
+        function updateCustomPreview() {
+            const name = document.getElementById('customName').value || 'NAME';
+            const num = document.getElementById('customNumber').value || '00';
+            const theme = document.getElementById('customColor').value;
+
+            document.getElementById('previewName').innerText = name.toUpperCase();
+            document.getElementById('previewNumber').innerText = num;
+            document.getElementById('customJerseyCard').className = `w-full max-w-xs aspect-[3/4] rounded-3xl bg-gradient-to-br ${theme} p-8 flex flex-col justify-between items-center text-white shadow-2xl relative border-2 border-white/20 transition-all duration-300`;
+        }
+
+        function addCustomToCart() {
+            const name = document.getElementById('customName').value || 'CUSTOM';
+            const num = document.getElementById('customNumber').value || '10';
+            const customItem = {
+                id: Date.now(),
+                title: `Custom Kit (${name} - #${num})`,
+                price: 109.99,
+                image: "https://images.unsplash.com/photo-1518091043644-c1d4457512c6?auto=format&fit=crop&w=200&q=80",
+                quantity: 1
+            };
+            cart.push(customItem);
+            updateCartUI();
+            toggleCartDrawer();
+        }
+
+        function toggleCartDrawer() {
+            document.getElementById('cartDrawer').classList.toggle('hidden');
+        }
+
+        function addToCart(productId) {
+            const prod = products.find(p => p.id === productId);
+            const existing = cart.find(item => item.id === productId);
+            if(existing) {
+                existing.quantity += 1;
+            } else {
+                cart.push({ ...prod, quantity: 1 });
+            }
+            updateCartUI();
+            toggleCartDrawer();
+        }
+
+        function removeFromCart(id) {
+            cart = cart.filter(item => item.id !== id);
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            const list = document.getElementById('cartItemsList');
+            list.innerHTML = '';
+            let subtotal = 0;
+            let count = 0;
+
+            if(cart.length === 0) {
+                list.innerHTML = `<div class="text-center py-12 text-gray-500 text-xs font-bold uppercase">Your Kit Bag is Empty</div>`;
+            }
+
+            cart.forEach(item => {
+                subtotal += item.price * item.quantity;
+                count += item.quantity;
+                list.insertAdjacentHTML('beforeend', `
+                    py-4 flex items-center justify-between gap-4">
+                        <img src="${item.image}" class="w-12 h-12 rounded-xl object-cover border border-brand-border">
+                        <div class="flex-grow">
+                            <h4 class="text-xs font-bold text-white line-clamp-1">${item.title}</h4>
+                            <span class="text-xs text-brand-neon font-black">$${item.price.toFixed(2)} x ${item.quantity}</span>
+                        </div>
+                        <button onclick="removeFromCart(${item.id})" class="text-gray-500 hover:text-red-400 p-2"><i class="fa-solid fa-trash text-xs"></i></button>
+                    </div>
+                `);
+            });
+
+            document.getElementById('cartItemCount').innerText = count;
+            document.getElementById('cartCountBadge').innerText = count;
+            document.getElementById('cartSubtotal').innerText = `$${subtotal.toFixed(2)}`;
+            document.getElementById('cartTotal').innerText = `$${subtotal.toFixed(2)}`;
+        }
+
+        function openQuickView(id) {
+            const p = products.find(item => item.id === id);
+            const content = document.getElementById('quickViewContent');
+            content.innerHTML = `
+                <button onclick="closeQuickView()" class="absolute top-4 right-4 text-gray-400 hover:text-white p-2"><i class="fa-solid fa-xmark text-xl"></i></button>
+                <div class="grid md:grid-cols-2 gap-6 items-center">
+                    <img src="${p.image}" class="w-full aspect-square object-cover rounded-2xl border border-brand-border">
+                    <div class="space-y-4">
+                        <span class="text-[10px] font-bold uppercase text-brand-neon bg-brand-neon/10 px-3 py-1 rounded-full border border-brand-neon/20">${p.category}</span>
+                        <h2 class="text-2xl font-black text-white">${p.title}</h2>
+                        <p class="text-xs text-gray-400 leading-relaxed">${p.description}</p>
+                        <div class="text-2xl font-black text-brand-neon">$${p.price.toFixed(2)}</div>
+                        <button onclick="addToCart(${p.id}); closeQuickView();" class="w-full py-4 rounded-xl bg-brand-blue hover:bg-blue-600 text-white font-extrabold text-xs uppercase tracking-wider shadow-lg glow-btn">
+                            Add To Bag
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.getElementById('quickViewModal').classList.remove('hidden');
+        }
+
+        function closeQuickView() {
+            document.getElementById('quickViewModal').classList.add('hidden');
+        }
+
+        function openCheckoutModal() {
+            if(cart.length === 0) return;
+            toggleCartDrawer();
+            document.getElementById('checkoutModal').classList.remove('hidden');
+        }
+
+        function closeCheckoutModal() {
+            document.getElementById('checkoutModal').classList.add('hidden');
+        }
+
+        function handleCheckoutSubmit(e) {
+            e.preventDefault();
+            alert("Matchday Order Placed Successfully! Your kits are being prepared for express delivery.");
+            cart = [];
+            updateCartUI();
+            closeCheckoutModal();
+        }
+
+        function renderAdminProducts() {
+            const tbody = document.getElementById('adminProductTable');
+            tbody.innerHTML = '';
+            document.getElementById('statProductCount').innerText = products.length;
+
+            products.forEach(prod => {
+                const badgeColor = prod.stock === 'In Stock' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400';
+                tbody.insertAdjacentHTML('beforeend', `
+                    <tr class="hover:bg-brand-dark/40 transition-colors">
+                        <td class="p-4 flex items-center gap-3">
+                            <img src="${prod.image}" class="w-10 h-10 rounded-xl object-cover border border-brand-border">
+                            <span class="font-bold text-white">${prod.title}</span>
+                        </td>
+                        <td class="p-4 uppercase text-[10px] font-bold text-brand-neon">${prod.category}</td>
+                        <td class="p-4 font-black text-white">$${prod.price.toFixed(2)}</td>
+                        <td class="p-4"><span class="${badgeColor} px-2.5 py-1 rounded-full text-[10px] font-bold">${prod.stock}</span></td>
+                        <td class="p-4 text-brand-gold font-bold"><i class="fa-solid fa-star mr-1"></i>${prod.rating}</td>
+                        <td class="p-4 text-right space-x-2">
+                            <button onclick="openProductModal(${prod.id})" class="p-2 bg-brand-dark hover:bg-brand-blue rounded-lg text-gray-300 hover:text-white transition-all"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="deleteProduct(${prod.id})" class="p-2 bg-brand-dark hover:bg-red-600 rounded-lg text-gray-300 hover:text-white transition-all"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `);
+            });
+        }
+
+        function renderAdminOrders() {
+            const tbody = document.getElementById('adminOrderTable');
+            tbody.innerHTML = '';
+
+            adminOrders.forEach(ord => {
+                let statusBg = 'bg-blue-500/10 text-blue-400';
+                if(ord.status === 'Shipped') statusBg = 'bg-amber-500/10 text-amber-400';
+                if(ord.status === 'Delivered') statusBg = 'bg-emerald-500/10 text-emerald-400';
+
+                tbody.insertAdjacentHTML('beforeend', `
+                    <tr class="hover:bg-brand-dark/40 transition-colors">
+                        <td class="p-4 font-bold text-white">${ord.id}</td>
+                        <td class="p-4 font-semibold">${ord.customer}</td>
+                        <td class="p-4 text-gray-400">${ord.items}</td>
+                        <td class="p-4 font-black text-brand-neon">$${ord.amount.toFixed(2)}</td>
+                        <td class="p-4"><span class="${statusBg} px-2.5 py-1 rounded-full text-[10px] font-bold">${ord.status}</span></td>
+                        <td class="p-4 text-right">
+                            <select onchange="updateOrderStatus('${ord.id}', this.value)" class="bg-brand-dark border border-brand-border rounded-lg px-2 py-1 text-xs text-white focus:outline-none">
+                                <option value="Pending" ${ord.status === 'Pending' ? 'selected' : ''}>Pending</option>
+                                <option value="Shipped" ${ord.status === 'Shipped' ? 'selected' : ''}>Shipped</option>
+                                <option value="Delivered" ${ord.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
+                            </select>
+                        </td>
+                    </tr>
+                `);
+            });
+        }
+
+        function renderAdminTopSelling() {
+            const list = document.getElementById('adminTopSellingList');
+            list.innerHTML = '';
+            products.slice(0, 3).forEach((p, idx) => {
+                list.insertAdjacentHTML('beforeend', `
+                    <div class="flex items-center justify-between p-3 bg-brand-dark rounded-xl border border-brand-border">
+                        <div class="flex items-center gap-3">
+                            <span class="text-xs font-black text-brand-neon">#${idx+1}</span>
+                            <img src="${p.image}" class="w-10 h-10 rounded-lg object-cover">
+                            <div>
+                                <h5 class="text-xs font-bold text-white line-clamp-1">${p.title}</h5>
+                                <span class="text-[10px] text-gray-400">$${p.price.toFixed(2)}</span>
+                            </div>
+                        </div>
+                    </div>
+                `);
+            });
+        }
+
+        function updateOrderStatus(orderId, newStatus) {
+            const ord = adminOrders.find(o => o.id === orderId);
+            if(ord) ord.status = newStatus;
+            renderAdminOrders();
+        }
+
+        function openProductModal(id = null) {
+            document.getElementById('productModal').classList.remove('hidden');
+            if(id) {
+                document.getElementById('modalTitle').innerText = "Edit Jersey Item";
+                const p = products.find(item => item.id === id);
+                document.getElementById('editProductId').value = p.id;
+                document.getElementById('prodTitleInput').value = p.title;
+                document.getElementById('prodCategoryInput').value = p.category;
+                document.getElementById('prodPriceInput').value = p.price;
+                document.getElementById('prodImageInput').value = p.image;
+            } else {
+                document.getElementById('modalTitle').innerText = "Add New Jersey Item";
+                document.getElementById('productForm').reset();
+                document.getElementById('editProductId').value = '';
+            }
+        }
+
+        function closeProductModal() {
+            document.getElementById('productModal').classList.add('hidden');
+        }
+
+        function handleSaveProduct(e) {
+            e.preventDefault();
+            const editId = document.getElementById('editProductId').value;
+            const title = document.getElementById('prodTitleInput').value;
+            const category = document.getElementById('prodCategoryInput').value;
+            const price = parseFloat(document.getElementById('prodPriceInput').value);
+            const image = document.getElementById('prodImageInput').value;
+
+            if(editId) {
+                const p = products.find(item => item.id == editId);
+                if(p) {
+                    p.title = title;
+                    p.category = category;
+                    p.price = price;
+                    p.image = image;
+                }
+            } else {
+                products.push({
+                    id: Date.now(),
+                    title,
+                    category,
+                    price,
+                    rating: 5.0,
+                    image,
+                    stock: "In Stock",
+                    description: "High performance official club jersey kit."
+                });
+            }
+
+            renderStoreProducts();
+            renderAdminProducts();
+            renderAdminTopSelling();
+            closeProductModal();
+        }
+
+        function deleteProduct(id) {
+            products = products.filter(item => item.id !== id);
+            renderStoreProducts();
+            renderAdminProducts();
+            renderAdminTopSelling();
+        }
+
+        function initAdminCharts() {
+            const ctxRev = document.getElementById('adminRevenueChart').getContext('2d');
+            new Chart(ctxRev, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Revenue ($)',
+                        data: [12000, 19000, 24000, 31000, 39000, 48290],
+                        borderColor: '#0066FF',
+                        backgroundColor: 'rgba(0, 102, 255, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { grid: { color: '#232D42' }, ticks: { color: '#9CA3AF' } },
+                        y: { grid: { color: '#232D42' }, ticks: { color: '#9CA3AF' } }
+                    }
+                }
+            });
+
+            const ctxPie = document.getElementById('categoryPieChart').getContext('2d');
+            new Chart(ctxPie, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Club Kits', 'National Teams', 'Retro Classics'],
+                    datasets: [{
+                        data: [55, 30, 15],
+                        backgroundColor: ['#0066FF', '#00FF66', '#FFD700']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom', labels: { color: '#F3F4F6', font: { size: 11 } } } }
+                }
+            });
+
+            const ctxBar = document.getElementById('weeklyBarChart').getContext('2d');
+            new Chart(ctxBar, {
+                type: 'bar',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'Orders Fulfilled',
+                        data: [45, 62, 85, 74, 98, 140, 125],
+                        backgroundColor: '#00FF66',
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { grid: { display: false }, ticks: { color: '#9CA3AF' } },
+                        y: { grid: { color: '#232D42' }, ticks: { color: '#9CA3AF' } }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
